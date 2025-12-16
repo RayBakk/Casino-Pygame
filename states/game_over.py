@@ -21,16 +21,8 @@ class GameOver:
         screen.fill((10, 10, 10))
 
         title = self.font_big.render("GAME OVER", True, (200, 30, 30))
-        reason = self.font_small.render(
-            "You failed to repay your loan and ended up in the street.",
-            True,
-            (220, 220, 220)
-        )
-        restart = self.font_small.render(
-            "Press R to restart or ESC to quit",
-            True,
-            (200, 200, 200)
-        )
+        reason = self.font_small.render("You failed to repay your loan and ended up in the street.", True, (220, 220, 220))
+        restart = self.font_small.render("Press R to restart or ESC to quit", True, (200, 200, 200))
 
         screen.blit(title, (screen.get_width()//2 - title.get_width()//2, 200))
         screen.blit(reason, (screen.get_width()//2 - reason.get_width()//2, 300))

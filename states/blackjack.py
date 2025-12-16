@@ -22,11 +22,11 @@ class Blackjack:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 self.next_state = "casino"
-            elif event.key == pygame.K_SPACE and not self.round_active:
+            elif event.key == pygame.K_SPACE and self.round_active == False:
                 self.start_round()
-            elif event.key == pygame.K_h and self.round_active:
+            elif event.key == pygame.K_h and self.round_active == True:
                 self.player_hit()
-            elif event.key == pygame.K_s and self.round_active:
+            elif event.key == pygame.K_s and self.round_active == True:
                 self.player_stand()
 
     def start_round(self):

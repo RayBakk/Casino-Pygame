@@ -25,7 +25,7 @@ class Bank:
     def open_npc_menu(self):
         lines = ["Bank Teller: Welcome! What would you like to do?"]
         choices = []
-        if not self.player.loan_active():
+        if self.player.loan_active() == False:
             choices.append("Take loan $500 (60s to repay)")
             choices.append("Take loan $1000 (120s to repay)")
         else:
@@ -33,7 +33,7 @@ class Bank:
         choices.append("Leave")
 
         def callback(idx):
-            if not self.player.loan_active():
+            if self.player.loan_active() == False:
                 if idx == 0: self.player.start_loan(500, 60)
                 elif idx == 1: self.player.start_loan(1000, 120)
             else:
@@ -59,15 +59,21 @@ class Bank:
     def draw(self, screen):
         screen.fill((80, 80, 200))
         pygame.draw.rect(screen, (200,160,120), self.npc_rect)
+
         font = pygame.font.Font(None,26)
         screen.blit(font.render("Bank Teller", True, (255,255,255)), (self.npc_rect.x, self.npc_rect.y-22))
+        
         self.player.draw(screen)
         pygame.draw.rect(screen, (200,200,0), self.door_rect)
+        
         hud_font = pygame.font.Font(None,28)
         screen.blit(hud_font.render(f"Money: ${self.player.money}", True, (255,255,255)), (10,10))
+
         if self.player.loan_active():
             sec_left = self.player.loan_time_left_ms()//1000
             screen.blit(hud_font.render(f"Loan: ${self.player.loan_amount} - Time left: {sec_left}s", True, (255,200,50)), (10,40))
+        
         help_font = pygame.font.Font(None,20)
         screen.blit(help_font.render("Press E to talk to the teller when near him.", True, (220,220,220)), (10,self.height-30))
+        
         self.dialogue.draw(screen)

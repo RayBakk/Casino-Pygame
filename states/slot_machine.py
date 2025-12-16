@@ -1,6 +1,6 @@
 import pygame
 import random
-from states.casino_floor import Player, SCREEN_WIDTH, SCREEN_HEIGHT
+from states.casino_floor import Player, SCREEN_WIDTH
 
 class SlotMachine:
     def __init__(self, player: Player):

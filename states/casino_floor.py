@@ -8,7 +8,7 @@ class Player:
         self.x = x
         self.y = y
         self.size = 40
-        self.speed = 4
+        self.speed = 5
         self.money = 1000
         self.loan_amount = 0
         self.loan_deadline_ms = None
@@ -16,11 +16,11 @@ class Player:
     def handle_input(self):
         keys = pygame.key.get_pressed()
         dx = dy = 0
-        if keys[pygame.K_w] or keys[pygame.K_UP]:
+        if keys[pygame.K_z] or keys[pygame.K_UP]:
             dy = -self.speed
         if keys[pygame.K_s] or keys[pygame.K_DOWN]:
             dy = self.speed
-        if keys[pygame.K_a] or keys[pygame.K_LEFT]:
+        if keys[pygame.K_q] or keys[pygame.K_LEFT]:
             dx = -self.speed
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
             dx = self.speed
@@ -52,7 +52,8 @@ class Player:
         return self.loan_deadline_ms is not None
 
     def loan_time_left_ms(self):
-        if not self.loan_active(): return 0
+        if self.loan_active() == False: 
+            return 0
         return max(0, self.loan_deadline_ms - pygame.time.get_ticks())
 
     def loan_overdue(self):
@@ -61,7 +62,6 @@ class Player:
     def clear_loan(self):
         self.loan_amount = 0
         self.loan_deadline_ms = None
-
 
 class CasinoFloor:
     def __init__(self, player: Player = None):
@@ -77,9 +77,6 @@ class CasinoFloor:
         self.blackjack_rect = pygame.Rect(100, 120, 80, 60)
         # slot machine
         self.slot_rect = pygame.Rect(400, 120, 80, 60)
-
-    def handle_event(self, event):
-        pass
 
     def update(self):
         self.player.update(self.width, self.height)
