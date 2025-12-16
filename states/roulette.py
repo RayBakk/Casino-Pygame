@@ -10,7 +10,6 @@ class Roulette:
         self.dialogue = DialogueBox()
         self.pending_message = None
 
-        # European roulette wheel
         self.wheel = [
             0, 32, 15, 19, 4, 21, 2, 25, 17,
             34, 6, 27, 13, 36, 11, 30, 8,
@@ -127,7 +126,7 @@ class Roulette:
             self.next_state = "game_over"
 
     def draw(self, screen):
-        screen.fill((30, 100, 30))
+        screen.fill((0, 120, 0))
 
         font = pygame.font.Font(None, 32)
         big = pygame.font.Font(None, 40)
@@ -141,9 +140,7 @@ class Roulette:
         if self.player.loan_active():
             sec = self.player.loan_time_left_ms() // 1000
             screen.blit(
-                font.render(f"Loan: ${self.player.loan_amount} - {sec}s left", True, (255,200,50)),
-                (20, 50)
-            )
+                font.render(f"Loan: ${self.player.loan_amount} - {sec}s left", True, (255,200,50)), (20, 50))
 
         pygame.draw.circle(screen, (0,0,0), (400, 320), 140)
         pygame.draw.circle(screen, (200,0,0), (400, 320), 130)

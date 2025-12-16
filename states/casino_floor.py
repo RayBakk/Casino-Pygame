@@ -68,17 +68,15 @@ class CasinoFloor:
         self.player = player if player else Player()
         self.width = SCREEN_WIDTH
         self.height = SCREEN_HEIGHT
+        # bank door
         self.door_rect = pygame.Rect(350, 0, 100, 20)
         self.next_state = None
-        # machines
-        self.machines = [pygame.Rect(100, 100, 80, 60), pygame.Rect(220, 100, 80, 60),
-                         pygame.Rect(340, 100, 80, 60), pygame.Rect(460, 100, 80, 60)]
         # roulette
-        self.roulette_rect = pygame.Rect(460, 100, 80, 60)
+        self.roulette_rect = pygame.Rect(250, 120, 80, 60)
         # blackjack
-        self.blackjack_rect = pygame.Rect(100, 220, 80, 60)
+        self.blackjack_rect = pygame.Rect(100, 120, 80, 60)
         # slot machine
-        self.slot_rect = pygame.Rect(600, 220, 80, 60)
+        self.slot_rect = pygame.Rect(400, 120, 80, 60)
 
     def handle_event(self, event):
         pass
@@ -109,9 +107,6 @@ class CasinoFloor:
 
     def draw(self, screen):
         screen.fill((20, 120, 20))
-        for m in self.machines:
-            pygame.draw.rect(screen, (100, 100, 100), m)
-            pygame.draw.rect(screen, (200, 200, 200), m.inflate(-10, -10))
         # player
         self.player.draw(screen)
         # door
@@ -131,3 +126,5 @@ class CasinoFloor:
         if self.player.loan_active():
             sec_left = self.player.loan_time_left_ms()//1000
             screen.blit(font.render(f"Loan: ${self.player.loan_amount} - Time left: {sec_left}s", True, (255,200,50)), (10, 40))
+        help_font = pygame.font.Font(None,20)
+        screen.blit(help_font.render("Press E to start a game when near to a machine.", True, (220,220,220)), (10,self.height-30))

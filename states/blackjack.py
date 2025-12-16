@@ -1,7 +1,6 @@
 import pygame
 import random
 from states.casino_floor import Player, SCREEN_WIDTH, SCREEN_HEIGHT
-from ui.dialogue_box import DialogueBox
 
 class Blackjack:
     def __init__(self, player: Player):
@@ -83,14 +82,14 @@ class Blackjack:
             self.message = "You lost the bet."
 
     def update(self):
-        # loan overdue?
+        # loan overdue
         if self.player.loan_overdue():
             self.next_state = "game_over"
 
     def draw(self, screen):
         screen.fill((0, 120, 0))  # green table background
         font = pygame.font.Font(None, 28)
-        screen.blit(font.render("Blackjack - H: Hit, S: Stand, SPACE: New Round, ESC: Exit", True, (255,255,255)), (50, 20))
+        screen.blit(font.render("Blackjack - H: Hit, S: Stand, SPACE: New Round, ESC: Exit", True, (255,255,255)), (50, 40))
         # player hand
         pygame.draw.rect(screen, (255,255,255), (50, 150, 700, 200), 2)
         player_text = "Player: " + ", ".join(str(x) for x in self.player_hand)
@@ -102,7 +101,7 @@ class Blackjack:
         screen.blit(font.render(f"Money: ${self.player.money}", True, (255,255,255)), (10, 10))
         if self.player.loan_active():
             sec_left = self.player.loan_time_left_ms()//1000
-            screen.blit(font.render(f"Loan: ${self.player.loan_amount} - Time left: {sec_left}s", True, (255,200,50)), (10, 40))
+            screen.blit(font.render(f"Loan: ${self.player.loan_amount} - Time left: {sec_left}s", True, (255,200,50)), (10, 60))
 
-        # message
+        # start message
         screen.blit(font.render(self.message, True, (255,255,0)), (50, 400))
