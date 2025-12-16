@@ -107,17 +107,21 @@ class CasinoFloor:
 
     def draw(self, screen):
         screen.fill((20, 120, 20))
+        font = pygame.font.Font(None,26)
         # player
         self.player.draw(screen)
         # door
         pygame.draw.rect(screen, (200, 200, 0), self.door_rect)
         # roulette
+        screen.blit(font.render("Roulette", True, (255,255,255)), (self.roulette_rect.x+3, self.roulette_rect.y-22))
         pygame.draw.rect(screen, (255, 0, 0), self.roulette_rect)
         pygame.draw.rect(screen, (200, 200, 200), self.roulette_rect.inflate(-10, -10))
         # blackjack
+        screen.blit(font.render("Blackjack", True, (255,255,255)), (self.blackjack_rect.x+3, self.blackjack_rect.y-22))
         pygame.draw.rect(screen, (0, 0, 0), self.blackjack_rect)
         pygame.draw.rect(screen, (200, 200, 200), self.blackjack_rect.inflate(-10, -10))
         # slot machine
+        screen.blit(font.render("Slot Machine", True, (255,255,255)), (self.slot_rect.x, self.slot_rect.y-22))
         pygame.draw.rect(screen, (120, 0, 120), self.slot_rect)
         pygame.draw.rect(screen, (200, 200, 200), self.slot_rect.inflate(-10, -10))
         # HUD

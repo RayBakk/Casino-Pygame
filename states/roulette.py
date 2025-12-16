@@ -9,6 +9,8 @@ class Roulette:
         self.next_state = None
         self.dialogue = DialogueBox()
         self.pending_message = None
+        self.pending_callback = None
+
 
         self.wheel = [
             0, 32, 15, 19, 4, 21, 2, 25, 17,
@@ -64,7 +66,7 @@ class Roulette:
             elif choice == 3:
                 self.spin("odd")
             elif choice == 4:
-                self.choose_number()
+                self.pending_callback = self.choose_number
         self.dialogue.open(lines, choices, callback)
 
     def choose_number(self):
@@ -74,6 +76,7 @@ class Roulette:
         def callback(idx):
             self.spin("number", int(choices[idx]))
 
+        print("Opening number selection", choices)
         self.dialogue.open(lines, choices, callback)
 
     def spin(self, bet_type, bet_value=None):
@@ -122,8 +125,14 @@ class Roulette:
 
 
     def update(self):
+        if self.pending_callback:
+            self.pending_callback()
+            self.pending_callback = None
+
         if self.player.loan_overdue():
             self.next_state = "game_over"
+
+
 
     def draw(self, screen):
         screen.fill((0, 120, 0))

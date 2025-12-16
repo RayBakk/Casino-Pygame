@@ -5,7 +5,8 @@ from states.casino_floor import Player, SCREEN_WIDTH, SCREEN_HEIGHT
 class Bank:
     def __init__(self, player: Player = None):
         self.player = player if player else Player()
-        self.player.x, self.player.y = 380, 520
+        self.player.x = 380
+        self.player.y = 520
         self.width = SCREEN_WIDTH
         self.height = SCREEN_HEIGHT
         self.door_rect = pygame.Rect(350, 580, 100, 20)
@@ -45,8 +46,12 @@ class Bank:
         self.dialogue.open(lines, choices, callback)
 
     def update(self):
-        self.player.update(self.width, self.height)
+        if self.dialogue.visible == False:
+            self.player.update(self.width, self.height)
         if self.player.rect().colliderect(self.door_rect):
+            # place player just next to the casino door
+            self.player.x = 380
+            self.player.y = 40
             self.next_state = "casino"
         if self.player.loan_overdue():
             self.next_state = "game_over"
@@ -55,7 +60,7 @@ class Bank:
         screen.fill((80, 80, 200))
         pygame.draw.rect(screen, (200,160,120), self.npc_rect)
         font = pygame.font.Font(None,26)
-        screen.blit(font.render("Bank Teller", True, (0,0,0)), (self.npc_rect.x+4, self.npc_rect.y-22))
+        screen.blit(font.render("Bank Teller", True, (255,255,255)), (self.npc_rect.x, self.npc_rect.y-22))
         self.player.draw(screen)
         pygame.draw.rect(screen, (200,200,0), self.door_rect)
         hud_font = pygame.font.Font(None,28)
