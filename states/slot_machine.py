@@ -1,11 +1,13 @@
 import pygame
 import random
 from states.casino_floor import Player, SCREEN_WIDTH
+from ui.dialogue_box import DialogueBox
 
 class SlotMachine:
     def __init__(self, player: Player = None):
         self.player = player
         self.next_state = None
+        self.dialogue = DialogueBox()
 
         self.symbols = ["CHERRY", "LEMON", "BELL", "DIAMOND"]
         self.reels = ["?", "?", "?"]
@@ -16,11 +18,23 @@ class SlotMachine:
         self.spin_end_time = 0
 
     def handle_event(self, event):
+        if self.dialogue.visible:
+            self.dialogue.handle_event(event)
+            return
+
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 self.next_state = "casino"
             elif event.key == pygame.K_SPACE and not self.spinning:
                 self.start_spin()
+            elif event.key == pygame.K_i:
+                self.show_help()
+    
+    def show_help(self):
+        lines = ["Help message..."]
+        choices = ["Close"]
+
+        self.dialogue.open(lines, choices)
 
     def start_spin(self):
         if self.player.money < self.spin_cost:
@@ -77,3 +91,6 @@ class SlotMachine:
         if self.player.loan_active():
             sec_left = self.player.loan_time_left_ms()//1000
             screen.blit(font.render(f"Loan: ${self.player.loan_amount} - Time left: {sec_left}s", True, (255,200,50)), (10, 30))
+        
+        self.dialogue.draw(screen)
+

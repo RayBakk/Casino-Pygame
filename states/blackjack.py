@@ -1,6 +1,7 @@
 import pygame
 import random
 from states.casino_floor import Player, SCREEN_WIDTH, SCREEN_HEIGHT
+from ui.dialogue_box import DialogueBox
 
 class Blackjack:
     def __init__(self, player: Player = None):
@@ -8,6 +9,7 @@ class Blackjack:
         self.width = SCREEN_WIDTH
         self.height = SCREEN_HEIGHT
         self.next_state = None
+        self.dialogue = DialogueBox()
 
         self.deck = [2,3,4,5,6,7,8,9,10,10,10,10,11]*4
         self.player_hand = []
@@ -19,6 +21,9 @@ class Blackjack:
         self.message = "Press SPACE to start a new round, ESC to exit."
 
     def handle_event(self, event):
+        if self.dialogue.visible:
+            self.dialogue.handle_event(event)
+            return
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 self.next_state = "casino"
@@ -32,7 +37,14 @@ class Blackjack:
                 self.bet_amount += 50
             elif event.key == pygame.K_DOWN and self.bet_amount > 50:
                 self.bet_amount -= 50
+            elif event.key == pygame.K_i:
+                self.show_help()
 
+    def show_help(self):
+        lines = ["Help message..."]
+        choices = ["Close"]
+
+        self.dialogue.open(lines, choices)
 
     def start_round(self):
         if self.player.money < self.bet_amount:
@@ -104,13 +116,15 @@ class Blackjack:
         screen.fill((0, 120, 0))  
         font = pygame.font.Font(None, 28)
         screen.blit(font.render("Blackjack - H: Hit, S: Stand, SPACE: New Round, ESC: Exit", True, (255,255,255)), (120, 60))
-        # player hand
         pygame.draw.rect(screen, (255,255,255), (50, 150, 700, 200), 2)
+
+        # player hand
         player_text = "Player: " + ", ".join(str(x) for x in self.player_hand)
         screen.blit(font.render(player_text, True, (255,255,255)), (60, 160))
+        # dealer hand
         dealer_text = "Dealer: " + ", ".join(str(x) for x in self.dealer_hand)
         screen.blit(font.render(dealer_text, True, (255,255,255)), (60, 220))
-
+    
         # HUD
         screen.blit(font.render(f"Bet: ${self.bet_amount}", True, (255,255,255)), (10, 90))
         screen.blit(font.render(f"Money: ${self.player.money}", True, (255,255,255)), (10, 10))
@@ -120,3 +134,5 @@ class Blackjack:
 
         # start message
         screen.blit(font.render(self.message, True, (255,255,0)), (50, 400))
+
+        self.dialogue.draw(screen)

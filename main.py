@@ -28,7 +28,7 @@ while running:
     if hasattr(current_state, "update"):
         current_state.update()
 
-    # state switching logic
+    # state switching
     next_state = getattr(current_state, "next_state", None)
     if next_state:
         player = getattr(current_state, "player", None)
