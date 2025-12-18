@@ -3,8 +3,11 @@ from ui.dialogue_box import DialogueBox
 from states.casino_floor import Player, SCREEN_WIDTH, SCREEN_HEIGHT
 
 class Bank:
-    def __init__(self, player: Player = None):
-        self.player = player if player else Player()
+    def __init__(self, player: Player):
+        if player is not None:
+            self.player = player
+        else:
+            self.player = Player()
         self.player.x = 380
         self.player.y = 520
         self.width = SCREEN_WIDTH
@@ -49,7 +52,6 @@ class Bank:
         if self.dialogue.visible == False:
             self.player.update(self.width, self.height)
         if self.player.rect().colliderect(self.door_rect):
-            # place player just next to the casino door
             self.player.x = 380
             self.player.y = 40
             self.next_state = "casino"
@@ -71,7 +73,7 @@ class Bank:
 
         if self.player.loan_active():
             sec_left = self.player.loan_time_left_ms()//1000
-            screen.blit(hud_font.render(f"Loan: ${self.player.loan_amount} - Time left: {sec_left}s", True, (255,200,50)), (10,40))
+            screen.blit(hud_font.render(f"Loan: ${self.player.loan_amount} - Time left: {sec_left}s", True, (255,200,50)), (10,30))
         
         help_font = pygame.font.Font(None,20)
         screen.blit(help_font.render("Press E to talk to the teller when near him.", True, (220,220,220)), (10,self.height-30))

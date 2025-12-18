@@ -28,6 +28,11 @@ class Blackjack:
                 self.player_hit()
             elif event.key == pygame.K_s and self.round_active == True:
                 self.player_stand()
+            elif event.key == pygame.K_UP:
+                self.bet_amount += 50
+            elif event.key == pygame.K_DOWN and self.bet_amount > 50:
+                self.bet_amount -= 50
+
 
     def start_round(self):
         if self.player.money < self.bet_amount:
@@ -42,12 +47,20 @@ class Blackjack:
         self.dealer_hand = [self.deck.pop(), self.deck.pop()]
         self.message = "Press H to Hit, S to Stand"
 
+        if self.hand_value(self.player_hand) == 21:
+            self.end_round(won=True)
+
+
     def player_hit(self):
+        if not self.round_active:
+            return
         self.player_hand.append(self.deck.pop())
         if self.hand_value(self.player_hand) > 21:
             self.end_round(lost=True)
 
     def player_stand(self):
+        if not self.round_active:
+            return
         # dealer plays
         while self.hand_value(self.dealer_hand) < 17:
             self.dealer_hand.append(self.deck.pop())
@@ -87,9 +100,11 @@ class Blackjack:
             self.next_state = "game_over"
 
     def draw(self, screen):
-        screen.fill((0, 120, 0))  # green table background
+        # green table background
+        screen.fill((0, 120, 0))  
         font = pygame.font.Font(None, 28)
-        screen.blit(font.render("Blackjack - H: Hit, S: Stand, SPACE: New Round, ESC: Exit", True, (255,255,255)), (60, 60))
+        screen.blit(font.render("Blackjack - H: Hit, S: Stand, SPACE: New Round, ESC: Exit", True, (255,255,255)), (120, 60))
+        screen.blit(font.render(f"Bet: ${self.bet_amount}", True, (255,255,255)), (10, 90))
         # player hand
         pygame.draw.rect(screen, (255,255,255), (50, 150, 700, 200), 2)
         player_text = "Player: " + ", ".join(str(x) for x in self.player_hand)
@@ -101,7 +116,7 @@ class Blackjack:
         screen.blit(font.render(f"Money: ${self.player.money}", True, (255,255,255)), (10, 10))
         if self.player.loan_active():
             sec_left = self.player.loan_time_left_ms()//1000
-            screen.blit(font.render(f"Loan: ${self.player.loan_amount} - Time left: {sec_left}s", True, (255,200,50)), (10, 40))
+            screen.blit(font.render(f"Loan: ${self.player.loan_amount} - Time left: {sec_left}s", True, (255,200,50)), (10, 30))
 
         # start message
         screen.blit(font.render(self.message, True, (255,255,0)), (50, 400))

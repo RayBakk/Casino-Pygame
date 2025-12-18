@@ -126,6 +126,6 @@ class CasinoFloor:
         screen.blit(font.render(f"Money: ${self.player.money}", True, (255,255,255)), (10, 10))
         if self.player.loan_active():
             sec_left = self.player.loan_time_left_ms()//1000
-            screen.blit(font.render(f"Loan: ${self.player.loan_amount} - Time left: {sec_left}s", True, (255,200,50)), (10, 40))
+            screen.blit(font.render(f"Loan: ${self.player.loan_amount} - Time left: {sec_left}s", True, (255,200,50)), (10, 30))
         help_font = pygame.font.Font(None,20)
         screen.blit(help_font.render("Press E to start a game when near to a machine.", True, (220,220,220)), (10,self.height-30))

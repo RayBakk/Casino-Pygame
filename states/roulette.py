@@ -1,6 +1,6 @@
 import pygame
 import random
-from states.casino_floor import Player, SCREEN_WIDTH, SCREEN_HEIGHT
+from states.casino_floor import Player, SCREEN_WIDTH
 from ui.dialogue_box import DialogueBox
 
 class Roulette:
@@ -10,7 +10,6 @@ class Roulette:
         self.dialogue = DialogueBox()
         self.pending_message = None
         self.pending_callback = None
-
 
         self.wheel = [
             0, 32, 15, 19, 4, 21, 2, 25, 17,
@@ -73,8 +72,8 @@ class Roulette:
         lines = ["Choose a number between 0 and 36:"]
         choices = [str(i) for i in range(0, 37)]
 
-        def callback(idx):
-            self.spin("number", int(choices[idx]))
+        def callback(choice):
+            self.spin("number", int(choices[choice]))
 
         print("Opening number selection", choices)
         self.dialogue.open(lines, choices, callback)
@@ -119,7 +118,6 @@ class Roulette:
                 "You lost your bet."
             ]
 
-        # IMPORTANT: open dialogue AFTER menu closes
         pygame.time.set_timer(pygame.USEREVENT, 100)
         self.pending_message = result_text
 
@@ -132,24 +130,20 @@ class Roulette:
         if self.player.loan_overdue():
             self.next_state = "game_over"
 
-
-
     def draw(self, screen):
         screen.fill((0, 120, 0))
 
-        font = pygame.font.Font(None, 32)
-        big = pygame.font.Font(None, 40)
+        font = pygame.font.Font(None, 28)
+        title_font = pygame.font.Font(None, 40)
 
-        title = big.render("Roulette Table", True, (255, 255, 255))
+        title = title_font.render("Roulette Table", True, (255, 255, 255))
         screen.blit(title, (SCREEN_WIDTH//2 - title.get_width()//2, 40))
 
         screen.blit(font.render(self.message, True, (230,230,230)), (200, 90))
-        screen.blit(font.render(f"Money: ${self.player.money}", True, (255,255,255)), (20, 20))
-
+        screen.blit(font.render(f"Money: ${self.player.money}", True, (255,255,255)), (10, 10))
         if self.player.loan_active():
-            sec = self.player.loan_time_left_ms() // 1000
-            screen.blit(
-                font.render(f"Loan: ${self.player.loan_amount} - {sec}s left", True, (255,200,50)), (20, 50))
+            sec_left = self.player.loan_time_left_ms()//1000
+            screen.blit(font.render(f"Loan: ${self.player.loan_amount} - Time left: {sec_left}s", True, (255,200,50)), (10, 30))
 
         pygame.draw.circle(screen, (0,0,0), (400, 320), 140)
         pygame.draw.circle(screen, (200,0,0), (400, 320), 130)

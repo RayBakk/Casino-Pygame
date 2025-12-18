@@ -8,27 +8,36 @@ class DialogueBox:
 
     def __init__(self, width=700, height=140, font=None):
         self.width = width
+        self.base_height = height
         self.height = height
         self.visible = False
         self.lines = []
         self.choices = None
         self.callback = None
         self.selected = 0
-        self.font = font or pygame.font.Font(None, 28)
+        if font is not None:
+            self.font = font
+        else:
+            self.font = pygame.font.Font(None, 28)
         self.rect = None
 
     def open(self, lines, choices=None, callback=None):
-        self.lines = lines if isinstance(lines, list) else [str(lines)]
+        if isinstance(lines, list):
+            self.lines = lines
+        else:
+            self.lines = [str(lines)]
         self.choices = choices
         self.callback = callback
         self.selected = 0
         self.visible = True
 
         line_count = len(self.lines)
-        choice_count = len(self.choices) if self.choices else 0
-        needed_height = 2*self.PADDING + line_count*(self.font.get_height()+self.LINE_SPACING) \
-                        + choice_count*(self.font.get_height()+self.CHOICE_SPACING)
-        self.height = max(self.height, min(needed_height, self.MAX_CHOICE_HEIGHT))
+        if self.choices is not None:
+            choice_count = len(self.choices)
+        else: 
+            choice_count = 0
+        needed_height = 2*self.PADDING + line_count*(self.font.get_height()+self.LINE_SPACING) + choice_count*(self.font.get_height()+self.CHOICE_SPACING)
+        self.height = min(max(self.base_height, needed_height), self.MAX_CHOICE_HEIGHT)
 
     def close(self):
         self.visible = False
@@ -77,7 +86,7 @@ class DialogueBox:
                 row = i % max_per_column
                 choice_x = x + self.PADDING + col * (self.width // num_columns)
                 choice_y = line_y + row * (self.font.get_height()+self.CHOICE_SPACING)
-                prefix = "→ " if i == self.selected else "  "
+                prefix = "X " if i == self.selected else "  "
                 color = (255,255,120) if i == self.selected else (200,200,200)
                 surf = self.font.render(prefix+choice, True, color)
                 screen.blit(surf, (choice_x, choice_y))

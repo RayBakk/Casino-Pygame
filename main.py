@@ -6,12 +6,14 @@ from states.roulette import Roulette
 from states.blackjack import Blackjack
 from states.slot_machine import SlotMachine
 
+# code borrowed from pygame
 pygame.init()
 WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Casino")
 clock = pygame.time.Clock()
 FPS = 60
+# end borrowed code
 
 current_state = CasinoFloor()
 

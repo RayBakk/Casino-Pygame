@@ -76,12 +76,9 @@ class SlotMachine:
             screen.blit(text, (x + 40 - text.get_width()//2, y + 40 - text.get_height()//2))
 
         # HUD
-        screen.blit(font.render(f"Money: ${self.player.money}", True, (255,255,255)), (20, 20))
+        screen.blit(font.render(f"Money: ${self.player.money}", True, (255,255,255)), (10, 10))
         screen.blit(font.render(self.message, True, (200,200,200)), (200, 360))
 
         if self.player.loan_active():
-            sec = self.player.loan_time_left_ms() // 1000
-            screen.blit(
-                font.render(f"Loan: ${self.player.loan_amount} - {sec}s left", True, (255,200,50)),
-                (20, 50)
-            )
+            sec_left = self.player.loan_time_left_ms()//1000
+            screen.blit(font.render(f"Loan: ${self.player.loan_amount} - Time left: {sec_left}s", True, (255,200,50)), (10, 30))
