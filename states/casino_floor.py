@@ -44,6 +44,8 @@ class Player:
         return pygame.Rect(int(self.x), int(self.y), self.size, self.size)
 
     def start_loan(self, amount: int, duration_seconds: int):
+        if self.loan_active():
+            return
         self.money += amount
         self.loan_amount = amount
         self.loan_deadline_ms = pygame.time.get_ticks() + duration_seconds * 1000
@@ -68,9 +70,9 @@ class CasinoFloor:
         self.player = player if player else Player()
         self.width = SCREEN_WIDTH
         self.height = SCREEN_HEIGHT
+        self.next_state = None
         # bank door
         self.door_rect = pygame.Rect(350, 0, 100, 20)
-        self.next_state = None
         # roulette
         self.roulette_rect = pygame.Rect(250, 120, 80, 60)
         # blackjack
@@ -78,26 +80,20 @@ class CasinoFloor:
         # slot machine
         self.slot_rect = pygame.Rect(400, 120, 80, 60)
 
+
+    def handle_event(self, event):
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_e:
+            if self.player.rect().colliderect(self.roulette_rect):
+                self.next_state = "roulette"
+            elif self.player.rect().colliderect(self.blackjack_rect):
+                self.next_state = "blackjack"
+            elif self.player.rect().colliderect(self.slot_rect):
+                self.next_state = "slot"
+            elif self.player.rect().colliderect(self.door_rect):
+                self.next_state = "bank"
+
     def update(self):
         self.player.update(self.width, self.height)
-        # door to bank
-        if self.player.rect().colliderect(self.door_rect):
-            self.next_state = "bank"
-        # roulette
-        if self.player.rect().colliderect(self.roulette_rect):
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_e]:
-                self.next_state = "roulette"
-        # blackjack
-        if self.player.rect().colliderect(self.blackjack_rect):
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_e]:
-                self.next_state = "blackjack"
-        # slot machine
-        if self.player.rect().colliderect(self.slot_rect):
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_e]:
-                self.next_state = "slot"
         # loan check
         if self.player.loan_overdue():
             self.next_state = "game_over"

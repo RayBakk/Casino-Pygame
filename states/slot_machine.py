@@ -3,7 +3,7 @@ import random
 from states.casino_floor import Player, SCREEN_WIDTH
 
 class SlotMachine:
-    def __init__(self, player: Player):
+    def __init__(self, player: Player = None):
         self.player = player
         self.next_state = None
 
@@ -40,13 +40,7 @@ class SlotMachine:
     def check_win(self):
         if self.reels.count(self.reels[0]) == 3:
             symbol = self.reels[0]
-            payout = {
-                "CHERRY": 100,
-                "LEMON": 150,
-                "BELL": 300,
-                "DIAMOND": 1000
-            }[symbol]
-
+            payout = {"CHERRY": 100, "LEMON": 150, "BELL": 300, "DIAMOND": 1000}.get(symbol, 0)
             self.player.money += payout
             self.message = f"3x {symbol}! You won ${payout}!"
         else:
@@ -76,6 +70,7 @@ class SlotMachine:
             screen.blit(text, (x + 40 - text.get_width()//2, y + 40 - text.get_height()//2))
 
         # HUD
+        screen.blit(font.render(f"Bet: ${self.spin_cost}", True, (255,255,255)), (10, 90))
         screen.blit(font.render(f"Money: ${self.player.money}", True, (255,255,255)), (10, 10))
         screen.blit(font.render(self.message, True, (200,200,200)), (200, 360))
 

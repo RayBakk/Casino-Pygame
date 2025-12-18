@@ -3,7 +3,7 @@ import random
 from states.casino_floor import Player, SCREEN_WIDTH, SCREEN_HEIGHT
 
 class Blackjack:
-    def __init__(self, player: Player):
+    def __init__(self, player: Player = None):
         self.player = player
         self.width = SCREEN_WIDTH
         self.height = SCREEN_HEIGHT
@@ -104,7 +104,6 @@ class Blackjack:
         screen.fill((0, 120, 0))  
         font = pygame.font.Font(None, 28)
         screen.blit(font.render("Blackjack - H: Hit, S: Stand, SPACE: New Round, ESC: Exit", True, (255,255,255)), (120, 60))
-        screen.blit(font.render(f"Bet: ${self.bet_amount}", True, (255,255,255)), (10, 90))
         # player hand
         pygame.draw.rect(screen, (255,255,255), (50, 150, 700, 200), 2)
         player_text = "Player: " + ", ".join(str(x) for x in self.player_hand)
@@ -113,6 +112,7 @@ class Blackjack:
         screen.blit(font.render(dealer_text, True, (255,255,255)), (60, 220))
 
         # HUD
+        screen.blit(font.render(f"Bet: ${self.bet_amount}", True, (255,255,255)), (10, 90))
         screen.blit(font.render(f"Money: ${self.player.money}", True, (255,255,255)), (10, 10))
         if self.player.loan_active():
             sec_left = self.player.loan_time_left_ms()//1000

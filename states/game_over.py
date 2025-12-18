@@ -12,10 +12,6 @@ class GameOver:
                 self.next_state = "restart"
             elif event.key == pygame.K_ESCAPE:
                 pygame.quit()
-                exit()
-
-    def update(self):
-        pass
 
     def draw(self, screen):
         screen.fill((10, 10, 10))

@@ -4,25 +4,16 @@ from states.casino_floor import Player, SCREEN_WIDTH
 from ui.dialogue_box import DialogueBox
 
 class Roulette:
-    def __init__(self, player: Player):
+    def __init__(self, player: Player = None):
         self.player = player
         self.next_state = None
         self.dialogue = DialogueBox()
         self.pending_message = None
         self.pending_callback = None
 
-        self.wheel = [
-            0, 32, 15, 19, 4, 21, 2, 25, 17,
-            34, 6, 27, 13, 36, 11, 30, 8,
-            23, 10, 5, 24, 16, 33, 1, 20,
-            14, 31, 9, 22, 18, 29, 7, 28,
-            12, 35, 3, 26
-        ]
+        self.wheel = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8,23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26]
 
-        self.red_numbers = {
-            1,3,5,7,9,12,14,16,18,
-            19,21,23,25,27,30,32,34,36
-        }
+        self.red_numbers = {1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36}
 
         self.bet_amount = 100
         self.message = "Press E to place a bet, ESC to exit."
@@ -37,6 +28,10 @@ class Roulette:
                 self.next_state = "casino"
             elif event.key == pygame.K_e:
                 self.open_bet_menu()
+            elif event.key == pygame.K_UP:
+                self.bet_amount += 50
+            elif event.key == pygame.K_DOWN and self.bet_amount > 50:
+                self.bet_amount -= 50
         
         if event.type == pygame.USEREVENT and self.pending_message:
             self.dialogue.open(self.pending_message)
@@ -140,6 +135,7 @@ class Roulette:
         screen.blit(title, (SCREEN_WIDTH//2 - title.get_width()//2, 40))
 
         screen.blit(font.render(self.message, True, (230,230,230)), (200, 90))
+        screen.blit(font.render(f"Bet: ${self.bet_amount}", True, (255,255,255)), (10, 90))
         screen.blit(font.render(f"Money: ${self.player.money}", True, (255,255,255)), (10, 10))
         if self.player.loan_active():
             sec_left = self.player.loan_time_left_ms()//1000

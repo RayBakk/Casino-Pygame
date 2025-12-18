@@ -3,11 +3,8 @@ from ui.dialogue_box import DialogueBox
 from states.casino_floor import Player, SCREEN_WIDTH, SCREEN_HEIGHT
 
 class Bank:
-    def __init__(self, player: Player):
-        if player is not None:
-            self.player = player
-        else:
-            self.player = Player()
+    def __init__(self, player: Player = None):
+        self.player = player
         self.player.x = 380
         self.player.y = 520
         self.width = SCREEN_WIDTH
@@ -24,6 +21,10 @@ class Bank:
         if event.type == pygame.KEYDOWN and event.key == pygame.K_e:
             if self.player.rect().colliderect(self.npc_rect):
                 self.open_npc_menu()
+            elif self.player.rect().colliderect(self.door_rect):
+                self.player.x = 380
+                self.player.y = 40
+                self.next_state = "casino"
 
     def open_npc_menu(self):
         lines = ["Bank Teller: Welcome! What would you like to do?"]
@@ -35,12 +36,12 @@ class Bank:
             choices.append("Repay loan")
         choices.append("Leave")
 
-        def callback(idx):
+        def callback(choice):
             if self.player.loan_active() == False:
-                if idx == 0: self.player.start_loan(500, 60)
-                elif idx == 1: self.player.start_loan(1000, 120)
+                if choice == 0: self.player.start_loan(500, 60)
+                elif choice == 1: self.player.start_loan(1000, 120)
             else:
-                if idx == 0:
+                if choice == 0:
                     if self.player.money >= self.player.loan_amount:
                         self.player.money -= self.player.loan_amount
                         self.player.clear_loan()
@@ -51,10 +52,7 @@ class Bank:
     def update(self):
         if self.dialogue.visible == False:
             self.player.update(self.width, self.height)
-        if self.player.rect().colliderect(self.door_rect):
-            self.player.x = 380
-            self.player.y = 40
-            self.next_state = "casino"
+
         if self.player.loan_overdue():
             self.next_state = "game_over"
 
