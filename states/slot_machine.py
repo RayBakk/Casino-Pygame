@@ -31,7 +31,17 @@ class SlotMachine:
                 self.show_help()
     
     def show_help(self):
-        lines = ["Help message..."]
+        lines = [
+            "Goal: Spin the reels and match all three symbols.",
+            "Symbols & Payouts:",
+            "- CHERRY   : $100",
+            "- LEMON    : $150",
+            "- BELL     : $300",
+            "- DIAMOND : $1000",
+            "Rules:",
+            "- Each spin costs $50",
+            "- You win only if all 3 symbols match",
+            "- Winnings are added instantly"]
         choices = ["Close"]
 
         self.dialogue.open(lines, choices)

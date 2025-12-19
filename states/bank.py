@@ -14,6 +14,10 @@ class Bank:
         self.npc_rect = pygame.Rect(360, 200, 80, 100)
         self.dialogue = DialogueBox()
 
+         # ================= ASSETS =================
+        self.floor_tile = pygame.image.load("assets/background/casino_floor_tile.png").convert_alpha()
+        self.floor_tile = pygame.transform.scale(self.floor_tile, (64, 64))
+
     def handle_event(self, event):
         if self.dialogue.visible:
             self.dialogue.handle_event(event)

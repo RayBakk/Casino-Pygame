@@ -1,5 +1,6 @@
 import pygame
 import random
+import math
 from states.casino_floor import Player, SCREEN_WIDTH
 from ui.dialogue_box import DialogueBox
 
@@ -26,13 +27,25 @@ class Roulette:
         self.bet_amount = 100
         self.message = "Press E to place a bet, ESC to exit."
 
+        # --- Spin animation ---
+        self.spinning = False
+        self.spin_start_time = 0
+        self.spin_duration = 2500  # ms
+
+        self.ball_angle = 0
+        self.wheel_angle = 0
+
+        self.bet_type = None
+        self.bet_value = None
+
+
     def handle_event(self, event):
         if self.dialogue.visible:
             self.dialogue.handle_event(event)
             return
-
+            
+        # Execute queued action when previous dialogue is closed (borrowed from chatgpt because didnt found the fix)
         if self.queued_action:
-            # Execute queued action when previous dialogue is closed (borrowed from chatgpt because didnt found the fix)
             self.queued_action()
             self.queued_action = None
 
@@ -49,7 +62,18 @@ class Roulette:
                 self.show_help()
 
     def show_help(self):
-        lines = ["Help message..."]
+        lines = [
+            "Goal: Place a bet and hope the ball lands in your favor.",
+            "Controls: - UP : Increase bet - DOWN : Decrease bet",
+            "Bet types:",
+            "- Red / Black : Win if the ball lands on that color (x2)",
+            "- Even / Odd  : Win if the number is even or odd (x2)",
+            "- Single Num  : Pick a number from 0 to 36 (x36)",
+            "Rules:",
+            "- 0 is neither red nor black",
+            "- 0 is not even or odd",
+            "- Winnings include your original bet",
+        ]
         choices = ["Close"]
 
         self.dialogue.open(lines, choices)
@@ -80,7 +104,7 @@ class Roulette:
                 # Queue the number selection to run after this dialogue closes
                 self.queued_action = self.choose_number
             elif choice == 5:
-                pass  # Cancel
+                pass
 
         self.dialogue.open(lines, choices, callback)
 
@@ -138,7 +162,7 @@ class Roulette:
             self.next_state = "game_over"
 
     def draw(self, screen):
-        screen.fill((0, 120, 0))
+        screen.fill((43, 146, 115))
         font = pygame.font.Font(None, 28)
         title_font = pygame.font.Font(None, 40)
 
