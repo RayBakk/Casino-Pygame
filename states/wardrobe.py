@@ -7,26 +7,31 @@ class Wardrobe:
         self.player = player
         self.next_state = None
 
-
+        #gets every asset from skin
         self.skins = [f"assets/player/skins/{i}.png" for i in range(1, 17)]
         self.selected = 0
 
+        #initialzing font
         self.font = pygame.font.Font(None, 36)
         self.small_font = pygame.font.Font(None, 22)
 
+        #some variables for the grid
         self.cols = 5
         self.cell_size = 96
         self.start_x = 80
         self.start_y = 140
 
+
+        # load the preview for the skins
         self.thumbs = []
         for path in self.skins:
             img = pygame.image.load(path).convert_alpha()
             self.thumbs.append(pygame.transform.scale(img, (64, 64)))
 
+        #event handler for possible events
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
-
+            
             if event.key == pygame.K_ESCAPE:
                 self.next_state = "casino"
                 return
@@ -53,7 +58,7 @@ class Wardrobe:
                 nxt = self.selected - self.cols
                 if nxt >= 0:
                     self.selected = nxt
-
+    #veiligheidscheck
     def update(self):
         if self.player.loan_overdue():
             self.next_state = "game_over"

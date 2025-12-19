@@ -1,5 +1,8 @@
 import pygame
 
+    # Herbuikbare Deur voor casino_floor en bank
+    # Gebruikt een sprite sheet waar 9 frames instaan
+
 class AnimatedDoor:
     def __init__(self, sheet_path, pos, frames_count=9, delay=50):
         self.sheet = pygame.image.load(sheet_path).convert_alpha()
@@ -9,6 +12,7 @@ class AnimatedDoor:
         self.frame_h = self.sheet.get_height()
 
         self.frames = []
+        #alle frames in frames list zetten
         for i in range(frames_count):
             rect = pygame.Rect(i * self.frame_w, 0, self.frame_w, self.frame_h)
             self.frames.append(self.sheet.subsurface(rect).copy())
@@ -18,6 +22,8 @@ class AnimatedDoor:
         self.delay = delay
 
         self.rect = pygame.Rect(pos[0], pos[1], self.frame_w, self.frame_h)
+
+    #Deur opent als player dichtbij anders sluit hij
 
     def update(self, should_open):
         now = pygame.time.get_ticks()
