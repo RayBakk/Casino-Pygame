@@ -7,43 +7,35 @@ class Wardrobe:
         self.player = player
         self.next_state = None
 
-        # ================= SKINS =================
-        # Zet deze bestanden in: assets/player/skins/1.png ... 15.png
-        self.skins = [f"assets/player/skins/{i}.png" for i in range(1, 16)]
+
+        self.skins = [f"assets/player/skins/{i}.png" for i in range(1, 17)]
         self.selected = 0
 
-        # ================= UI =================
         self.font = pygame.font.Font(None, 36)
         self.small_font = pygame.font.Font(None, 22)
 
-        # grid layout
         self.cols = 5
         self.cell_size = 96
         self.start_x = 80
         self.start_y = 140
 
-        # preload thumbnails
         self.thumbs = []
         for path in self.skins:
             img = pygame.image.load(path).convert_alpha()
             self.thumbs.append(pygame.transform.scale(img, (64, 64)))
 
-    # ---------------- EVENTS ----------------
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
 
-            # terug naar casino zonder kiezen
             if event.key == pygame.K_ESCAPE:
                 self.next_state = "casino"
                 return
 
-            # skin toepassen
             if event.key in (pygame.K_e, pygame.K_RETURN):
                 self.player.set_skin(self.skins[self.selected])
                 self.next_state = "casino"
                 return
 
-            # navigatie
             if event.key == pygame.K_RIGHT:
                 if self.selected + 1 < len(self.skins):
                     self.selected += 1
@@ -62,13 +54,11 @@ class Wardrobe:
                 if nxt >= 0:
                     self.selected = nxt
 
-    # ---------------- UPDATE ----------------
     def update(self):
-        # veiligheid: lening check
         if self.player.loan_overdue():
             self.next_state = "game_over"
 
-    # ---------------- DRAW ----------------
+    # DRAW
     def draw(self, screen):
         screen.fill((25, 25, 30))
 
