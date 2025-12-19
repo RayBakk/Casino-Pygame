@@ -1,39 +1,7 @@
 import pygame
 from ui.dialogue_box import DialogueBox
 from states.casino_floor import Player, SCREEN_WIDTH, SCREEN_HEIGHT
-
-
-class AnimatedDoor:
-    def __init__(self, sheet_path: str, pos: tuple[int, int], frames_count: int = 9, delay: int = 50):
-        self.sheet = pygame.image.load(sheet_path).convert_alpha()
-
-        self.frames_count = frames_count
-        self.frame_w = self.sheet.get_width() // frames_count
-        self.frame_h = self.sheet.get_height()
-
-        self.frames = []
-        for i in range(frames_count):
-            rect = pygame.Rect(i * self.frame_w, 0, self.frame_w, self.frame_h)
-            self.frames.append(self.sheet.subsurface(rect).copy())
-
-        self.frame = 0
-        self.timer = 0
-        self.delay = delay
-
-        self.rect = pygame.Rect(pos[0], pos[1], self.frame_w, self.frame_h)
-
-    def update(self, should_open: bool):
-        now = pygame.time.get_ticks()
-        if now - self.timer >= self.delay:
-            self.timer = now
-            if should_open and self.frame < self.frames_count - 1:
-                self.frame += 1
-            elif (not should_open) and self.frame > 0:
-                self.frame -= 1
-
-    def draw(self, screen):
-        screen.blit(self.frames[self.frame], self.rect.topleft)
-
+from states.animated_door import AnimatedDoor
 
 class Bank:
     def __init__(self, player: Player = None):
@@ -58,10 +26,11 @@ class Bank:
         self.teller_draw_size = (self.npc_rect.w, self.npc_rect.h)
 
         # ================= DEUR (ANIMATED) =================
-        # zelfde sheet als casino floor
         self.door = AnimatedDoor(
             sheet_path="assets/background/EntranceDoorAnimationSheet.png",
-            pos=(self.width // 2 - 24, self.height - 48),  # onderaan
+            pos=((SCREEN_WIDTH - (pygame.image.load("assets/background/EntranceDoorAnimationSheet.png").get_width() // 9)) // 2,
+            SCREEN_HEIGHT - pygame.image.load("assets/background/EntranceDoorAnimationSheet.png").get_height()
+                ),
             frames_count=9,
             delay=50
         )
@@ -80,7 +49,7 @@ class Bank:
             elif self.player.rect().colliderect(self.door.rect.inflate(self.interact_padding, self.interact_padding)):
                 self.player.x = 380
                 self.player.y = 40
-                self.next_state = "casino"  # <-- als jij "casin" gebruikt: overal aanpassen
+                self.next_state = "casino"
 
     def open_npc_menu(self):
         lines = ["Bank Teller: Welcome! What would you like to do?"]

@@ -1,4 +1,5 @@
 import pygame
+from states.animated_door import AnimatedDoor
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -6,21 +7,23 @@ SCREEN_HEIGHT = 600
 # ==================== Player ========================
 
 class Player:
-    def __init__(self):
-        self.x = 400
-        self.y = 300
+    def __init__(self, x=400, y=300):
+        self.x = x
+        self.y = y
 
-        # grootte op scherm met speed
         self.size = 40
         self.speed = 5
 
-        #Spritesheet:4x4 sheet
         self.sheet = pygame.image.load("assets/player/player.png").convert_alpha()
-
         self.frame_w = self.sheet.get_width() // 4
         self.frame_h = self.sheet.get_height() // 4
 
-        self.dir_row = {"down": 0, "right": 1, "up": 2, "left": 3}
+        self.dir_row = {
+            "down": 0,
+            "right": 1,
+            "up": 2,
+            "left": 3
+        }
 
         self.direction = "down"
         self.moving = False
@@ -29,12 +32,10 @@ class Player:
         self.frame_timer = 0
         self.frame_delay = 120  # ms
 
-        #GAME STATS
         self.money = 1000
         self.loan_amount = 0
         self.loan_deadline_ms = None
 
-    #INPUT
     def handle_input(self):
         keys = pygame.key.get_pressed()
         dx = dy = 0
@@ -60,7 +61,6 @@ class Player:
         self.x += dx
         self.y += dy
 
-    # UPDATE
     def update(self, width, height):
         self.handle_input()
 
@@ -72,9 +72,9 @@ class Player:
         else:
             self.frame = 0
 
-        self.apply_limits(width, height)
+        self.apply_boundaries(width, height)
 
-    def apply_limits(self, width, height):
+    def apply_boundaries(self, width, height):
         if self.x < 0:
             self.x = 0
         if self.y < 0:
@@ -84,22 +84,23 @@ class Player:
         if self.y + self.size > height:
             self.y = height - self.size
 
-    # DRAW
     def get_current_image(self):
         idle_col_for_row = {
-        0: 1,  # down
-        1: 1,  # right
-        2: 1,  # up
-        3: 0   # left
+            0: 1,  # down
+            1: 1,  # right
+            2: 1,  # up
+            3: 0   # left
         }
 
         row = self.dir_row[self.direction]
-        if self.moving == True:
-            col = self.frame
-        else:
-            col = idle_col_for_row[row]
+        col = self.frame if self.moving else idle_col_for_row[row]
 
-        rect = pygame.Rect(col * self.frame_w, row * self.frame_h, self.frame_w, self.frame_h)
+        rect = pygame.Rect(
+            col * self.frame_w,
+            row * self.frame_h,
+            self.frame_w,
+            self.frame_h
+        )
         return self.sheet.subsurface(rect)
 
     def draw(self, screen):
@@ -138,15 +139,11 @@ class Player:
 
 class CasinoFloor:
     def __init__(self, player: Player = None):
-        if player is not None:
-            self.player = player
-        else:
-            self.player = Player()
+        self.player = player if player else Player()
         self.width = SCREEN_WIDTH
         self.height = SCREEN_HEIGHT
         self.next_state = None
 
-        # ================= ASSETS =================
         self.floor_tile = pygame.image.load("assets/background/casino_floor_tile.png").convert_alpha()
         self.floor_tile = pygame.transform.scale(self.floor_tile, (64, 64))
 
@@ -154,57 +151,35 @@ class CasinoFloor:
         self.roulette_img = pygame.image.load("assets/background/roulette_casino_floor.png").convert_alpha()
         self.slot_img = pygame.image.load("assets/background/slots_casino_floor.png").convert_alpha()
 
-        # ===== DEUR: 9 frames =====
-        self.door_image = pygame.image.load("assets/background/EntranceDoorAnimationSheet.png").convert_alpha()
-
-        self.door_frames_count = 9
-        self.door_frame_w = self.door_image.get_width() // self.door_frames_count
-        self.door_frame_h = self.door_image.get_height()
-
-        self.door_frames = []
-        for i in range(self.door_frames_count):
-            rect = pygame.Rect(i * self.door_frame_w, 0, self.door_frame_w, self.door_frame_h)
-            self.door_frames.append(self.door_image.subsurface(rect).copy())
-
-        self.door_frame = 0
-        self.door_timer = 0
-        self.door_delay = 50  # ms (hoger = trager)
-
-        # ================= POSITIES / RECTANGLES ================
-        self.door_rect = pygame.Rect(self.width // 2 - self.door_frame_w // 2, 0, self.door_frame_w, self.door_frame_h)
-
-        # machines / games
         self.blackjack_rect = pygame.Rect(90, 120, 140, 90)
         self.roulette_rect = pygame.Rect(270, 100, 170, 120)
-        self.slot_rect = pygame.Rect(520, 90, 70, 120)
+        self.slot_rect = pygame.Rect(520, 120, 70, 120)
 
-        # interact range
-        self.interact_range = 20
+        self.door = AnimatedDoor(
+            sheet_path="assets/background/EntranceDoorAnimationSheet.png",
+            pos=((SCREEN_WIDTH - (pygame.image.load("assets/background/EntranceDoorAnimationSheet.png").get_width() // 9)) // 2,0 ),            frames_count=9,
+            delay=50
+        )
+
+        self.interact_padding = 20
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN and event.key == pygame.K_e:
             p = self.player.rect()
-            if p.colliderect(self.roulette_rect.inflate(self.interact_range, self.interact_range)):
+            if p.colliderect(self.roulette_rect.inflate(self.interact_padding, self.interact_padding)):
                 self.next_state = "roulette"
-            elif p.colliderect(self.blackjack_rect.inflate(self.interact_range, self.interact_range)):
+            elif p.colliderect(self.blackjack_rect.inflate(self.interact_padding, self.interact_padding)):
                 self.next_state = "blackjack"
-            elif p.colliderect(self.slot_rect.inflate(self.interact_range, self.interact_range)):
+            elif p.colliderect(self.slot_rect.inflate(self.interact_padding, self.interact_padding)):
                 self.next_state = "slot"
-            elif p.colliderect(self.door_rect.inflate(self.interact_range, self.interact_range)):
+            elif p.colliderect(self.door.rect.inflate(self.interact_padding, self.interact_padding)):
                 self.next_state = "bank"
 
     def update(self):
         self.player.update(self.width, self.height)
 
-        # deur animatie: open als dichtbij, anders dicht
-        near_door = self.player.rect().colliderect(self.door_rect.inflate(60, 60))
-        now = pygame.time.get_ticks()
-        if now - self.door_timer >= self.door_delay:
-            self.door_timer = now
-            if near_door and self.door_frame < self.door_frames_count - 1:
-                self.door_frame += 1
-            elif near_door == False and self.door_frame > 0:
-                self.door_frame -= 1
+        near_door = self.player.rect().colliderect(self.door.rect.inflate(60, 60))
+        self.door.update(near_door)
 
         if self.player.loan_overdue():
             self.next_state = "game_over"
@@ -216,10 +191,8 @@ class CasinoFloor:
                 screen.blit(self.floor_tile, (x, y))
 
     def draw(self, screen):
-        # vloer
         self.draw_tiled_floor(screen)
 
-        # machines tekenen
         bj = pygame.transform.scale(self.blackjack_img, (self.blackjack_rect.w, self.blackjack_rect.h))
         ro = pygame.transform.scale(self.roulette_img, (self.roulette_rect.w, self.roulette_rect.h))
         sl = pygame.transform.scale(self.slot_img, (self.slot_rect.w, self.slot_rect.h))
@@ -228,20 +201,20 @@ class CasinoFloor:
         screen.blit(ro, self.roulette_rect.topleft)
         screen.blit(sl, self.slot_rect.topleft)
 
-        # deur tekenen (niet schalen, anders wordt het blurry)
-        door_img = self.door_frames[self.door_frame]
-        screen.blit(door_img, self.door_rect.topleft)
+        self.door.draw(screen)
 
-        # player
         self.player.draw(screen)
 
-        # HUD
         hud_font = pygame.font.Font(None, 28)
         screen.blit(hud_font.render(f"Money: ${self.player.money}", True, (255, 255, 255)), (10, 10))
 
         if self.player.loan_active():
             sec_left = self.player.loan_time_left_ms() // 1000
-            screen.blit(hud_font.render(f"Loan: ${self.player.loan_amount} - Time left: {sec_left}s", True, (255, 200, 50)), (10, 30))
+            screen.blit(
+                hud_font.render(f"Loan: ${self.player.loan_amount} - Time left: {sec_left}s", True, (255, 200, 50)),
+                (10, 30)
+            )
 
         help_font = pygame.font.Font(None, 20)
-        screen.blit(help_font.render("Press E when near a table/machine/door.", True, (220, 220, 220)), (10, self.height - 30))
+        screen.blit(help_font.render("Press E when near a table/machine/door.", True, (220, 220, 220)),
+                    (10, self.height - 30))
