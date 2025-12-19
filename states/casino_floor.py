@@ -192,9 +192,7 @@ class CasinoFloor:
         # initialize animated door
         self.door = AnimatedDoor(
             "assets/background/EntranceDoorAnimationSheet.png",
-            ((SCREEN_WIDTH - (pygame.image.load("assets/background/EntranceDoorAnimationSheet.png").get_width() // 9)) // 2, 0),
-            9, 50
-        )
+            ((SCREEN_WIDTH - (pygame.image.load("assets/background/EntranceDoorAnimationSheet.png").get_width() // 9)) // 2, 0), 9, 50)
         
         # extra area around objects for interaction
         self.interact_padding = 20  
