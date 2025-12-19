@@ -5,6 +5,7 @@ from states.game_over import GameOver
 from states.roulette import Roulette
 from states.blackjack import Blackjack
 from states.slot_machine import SlotMachine
+from states.wardrobe import Wardrobe
 
 # code borrowed from pygame
 pygame.init()
@@ -42,6 +43,8 @@ while running:
             current_state = Blackjack(player=player)
         elif next_state == "slot":
             current_state = SlotMachine(player=player)
+        elif next_state == "wardrobe":
+            current_state = Wardrobe(player=player)
         elif next_state == "game_over":
             current_state = GameOver()
         elif next_state == "restart":

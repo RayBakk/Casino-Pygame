@@ -14,7 +14,8 @@ class Player:
         self.size = 40
         self.speed = 5
 
-        self.sheet = pygame.image.load("assets/player/player.png").convert_alpha()
+        self.sheet_path = "assets/player/player.png"
+        self.load_sheet(self.sheet_path)
         self.frame_w = self.sheet.get_width() // 4
         self.frame_h = self.sheet.get_height() // 4
 
@@ -133,6 +134,18 @@ class Player:
     def clear_loan(self):
         self.loan_amount = 0
         self.loan_deadline_ms = None
+    
+    def load_sheet(self, path: str):
+        self.sheet_path = path
+        self.sheet = pygame.image.load(path).convert_alpha()
+        self.frame_w = self.sheet.get_width() // 4
+        self.frame_h = self.sheet.get_height() // 4
+
+    def set_skin(self, path: str):
+        self.sheet = pygame.image.load(path).convert_alpha()
+        self.frame_w = self.sheet.get_width() // 4
+        self.frame_h = self.sheet.get_height() // 4
+
 
 
 # ==================== CASINO FLOOR ========================
@@ -150,6 +163,11 @@ class CasinoFloor:
         self.blackjack_img = pygame.image.load("assets/background/blackjack_casino_floor.png").convert_alpha()
         self.roulette_img = pygame.image.load("assets/background/roulette_casino_floor.png").convert_alpha()
         self.slot_img = pygame.image.load("assets/background/slots_casino_floor.png").convert_alpha()
+        self.wardrobe_img = pygame.image.load("assets/background/wardrobe.png").convert_alpha()
+
+
+        wardrobe_h =48
+        self.wardrobe_rect = pygame.Rect(100, wardrobe_h, 48 , 48)
 
         self.blackjack_rect = pygame.Rect(90, 120, 140, 90)
         self.roulette_rect = pygame.Rect(270, 100, 170, 120)
@@ -174,6 +192,9 @@ class CasinoFloor:
                 self.next_state = "slot"
             elif p.colliderect(self.door.rect.inflate(self.interact_padding, self.interact_padding)):
                 self.next_state = "bank"
+            elif p.colliderect(self.wardrobe_rect.inflate(self.interact_padding, self.interact_padding)):
+                self.next_state = "wardrobe"
+
 
     def update(self):
         self.player.update(self.width, self.height)
@@ -202,6 +223,9 @@ class CasinoFloor:
         screen.blit(sl, self.slot_rect.topleft)
 
         self.door.draw(screen)
+
+        wardrobe_draw = pygame.transform.scale(self.wardrobe_img, (self.wardrobe_rect.w, self.wardrobe_rect.h))
+        screen.blit(wardrobe_draw, self.wardrobe_rect.topleft)
 
         self.player.draw(screen)
 
