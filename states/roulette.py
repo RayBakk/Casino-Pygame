@@ -1,6 +1,5 @@
 import pygame
 import random
-import math
 from states.casino_floor import Player, SCREEN_WIDTH
 from ui.dialogue_box import DialogueBox
 
@@ -27,28 +26,7 @@ class Roulette:
         self.bet_amount = 100
         self.message = "Press E to place a bet, ESC to exit."
 
-        # --- Spin animation ---
-        self.spinning = False
-        self.spin_start_time = 0
-        self.spin_duration = 2500  # ms
-
-        self.ball_angle = 0
-        self.wheel_angle = 0
-
-        self.bet_type = None
-        self.bet_value = None
-
-
     def handle_event(self, event):
-        if self.dialogue.visible:
-            self.dialogue.handle_event(event)
-            return
-            
-        # Execute queued action when previous dialogue is closed (borrowed from chatgpt because didnt found the fix)
-        if self.queued_action:
-            self.queued_action()
-            self.queued_action = None
-
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 self.next_state = "casino"
@@ -60,6 +38,10 @@ class Roulette:
                 self.bet_amount -= 50
             elif event.key == pygame.K_i:
                 self.show_help()
+        if self.dialogue.visible:
+            self.dialogue.handle_event(event)
+            return
+
 
     def show_help(self):
         lines = [
@@ -75,10 +57,7 @@ class Roulette:
             "- Winnings include your original bet",
         ]
         choices = ["Close"]
-
         self.dialogue.open(lines, choices)
-
-
 
     def open_bet_menu(self):
         lines = [f"Roulette - Choose your bet (${self.bet_amount}):"]
@@ -120,8 +99,10 @@ class Roulette:
 
     def spin(self, bet_type, bet_value=None):
         if self.player.money < self.bet_amount:
-            # Queue the "not enough money" message
-            self.queued_action = lambda: self.dialogue.open(["You don't have enough money!"])
+            def show_insufficient_funds():
+                self.dialogue.open(["You don't have enough money!"])
+
+            self.queued_action = show_insufficient_funds
             return
 
         self.player.money -= self.bet_amount
@@ -154,12 +135,19 @@ class Roulette:
             result_text = [f"Ball landed on {result}.", "You lost your bet."]
 
         # Queue the spin result to display after any current dialogue closes
-        self.queued_action = lambda: self.dialogue.open(result_text)
+        def queued_action():
+            self.dialogue.open(result_text)
+
+        self.queued_action = queued_action
 
 
     def update(self):
         if self.player.loan_overdue():
             self.next_state = "game_over"
+
+        if not self.dialogue.visible and self.queued_action:
+            self.queued_action()
+            self.queued_action = None
 
     def draw(self, screen):
         screen.fill((43, 146, 115))
