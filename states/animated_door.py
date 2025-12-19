@@ -24,7 +24,7 @@ class AnimatedDoor:
 
         self.rect = pygame.Rect(pos[0], pos[1], self.frame_w, self.frame_h)
 
-    # Deur opent als player dichtbij anders sluit hij
+    # deur opent als player dichtbij anders sluit hij
 
     def update(self, should_open):
         now = pygame.time.get_ticks()
