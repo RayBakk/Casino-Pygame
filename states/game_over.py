@@ -2,6 +2,7 @@ import pygame
 
 class GameOver:
     def __init__(self):
+        # initialiseren van variables
         self.next_state = None
         self.font_big = pygame.font.Font(None, 72)
         self.font_small = pygame.font.Font(None, 32)

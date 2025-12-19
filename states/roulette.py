@@ -5,10 +5,11 @@ from ui.dialogue_box import DialogueBox
 
 class Roulette:
     def __init__(self, player: Player = None):
-        self.player = player if player else Player()
+        # initialiseren van variables
+        self.player = player 
         self.next_state = None
         self.dialogue = DialogueBox()
-        self.queued_action = None  # new: queue next dialogue action
+        self.queued_action = None 
 
         self.wheel = [
             0, 32, 15, 19, 4, 21, 2, 25, 17,
@@ -27,6 +28,9 @@ class Roulette:
         self.message = "Press E to place a bet, ESC to exit."
 
     def handle_event(self, event):
+        if self.dialogue.visible:
+            self.dialogue.handle_event(event)
+            return
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 self.next_state = "casino"
@@ -38,10 +42,6 @@ class Roulette:
                 self.bet_amount -= 50
             elif event.key == pygame.K_i:
                 self.show_help()
-        if self.dialogue.visible:
-            self.dialogue.handle_event(event)
-            return
-
 
     def show_help(self):
         lines = [
@@ -80,8 +80,9 @@ class Roulette:
             elif choice == 3:
                 self.spin("odd")
             elif choice == 4:
-                # Queue the number selection to run after this dialogue closes
+                # queue the number selection to run after this dialogue closes (borrowed from chatgpt because was bugged and didnt find a fix)
                 self.queued_action = self.choose_number
+                # end borrowed code
             elif choice == 5:
                 pass
 
@@ -134,12 +135,12 @@ class Roulette:
         else:
             result_text = [f"Ball landed on {result}.", "You lost your bet."]
 
-        # Queue the spin result to display after any current dialogue closes
+        # queue the spin result to display after any current dialogue closes (borrowed from chatgpt because was bugged and didnt find a fix)
         def queued_action():
             self.dialogue.open(result_text)
 
         self.queued_action = queued_action
-
+        # end borrowed code
 
     def update(self):
         if self.player.loan_overdue():

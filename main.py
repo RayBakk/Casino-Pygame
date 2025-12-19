@@ -7,14 +7,13 @@ from states.blackjack import Blackjack
 from states.slot_machine import SlotMachine
 from states.wardrobe import Wardrobe
 
-# code borrowed from pygame
+# code borrowed from pygame website to start basic game
 pygame.init()
 WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Casino")
 clock = pygame.time.Clock()
 FPS = 60
-# end borrowed code
 
 current_state = CasinoFloor()
 
@@ -23,15 +22,19 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        # check for events in current state
         if hasattr(current_state, "handle_event"):
             current_state.handle_event(event)
 
+    # update the current state
     if hasattr(current_state, "update"):
         current_state.update()
 
     # state switching
+    # check if there is a next state to change e.g from casino to bank
     next_state = getattr(current_state, "next_state", None)
     if next_state:
+        # check for player in current state
         player = getattr(current_state, "player", None)
         if next_state == "bank":
             current_state = Bank(player=player)
@@ -51,7 +54,8 @@ while running:
             current_state = CasinoFloor()
         else:
             pass
-
+    
+    # draw the current state
     if hasattr(current_state, "draw"):
         current_state.draw(screen)
 

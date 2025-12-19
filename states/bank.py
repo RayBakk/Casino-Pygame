@@ -5,6 +5,7 @@ from states.animated_door import AnimatedDoor
 
 class Bank:
     def __init__(self, player: Player = None):
+        # initialiseren van variables
         self.player = player
         self.player.x = 380
         self.player.y = 520
@@ -12,30 +13,24 @@ class Bank:
         self.width = SCREEN_WIDTH
         self.height = SCREEN_HEIGHT
         self.next_state = None
-
-        # NPC rect (hitbox / interact)
-        self.npc_rect = pygame.Rect(360, 200, 80, 100)
-
         self.dialogue = DialogueBox()
 
-        # ================= ASSETS =================
+        # NPC rect
+        self.npc_rect = pygame.Rect(360, 200, 80, 100)
+
+        # assets
         self.tile = pygame.image.load("assets/background/bank_tile.png").convert_alpha()
         self.tile = pygame.transform.scale(self.tile, (64, 64))
 
         self.teller_img = pygame.image.load("assets/background/bank_teller.png").convert_alpha()
         self.teller_draw_size = (self.npc_rect.w, self.npc_rect.h)
 
-        # ================= DEUR (ANIMATED) =================
-        self.door = AnimatedDoor(
-            sheet_path="assets/background/EntranceDoorAnimationSheet.png",
+        # deur (animated)
+        self.door = AnimatedDoor(sheet_path="assets/background/EntranceDoorAnimationSheet.png",
             pos=((SCREEN_WIDTH - (pygame.image.load("assets/background/EntranceDoorAnimationSheet.png").get_width() // 9)) // 2,
-            SCREEN_HEIGHT - pygame.image.load("assets/background/EntranceDoorAnimationSheet.png").get_height()
-                ),
-            frames_count=9,
-            delay=50
-        )
+            SCREEN_HEIGHT - pygame.image.load("assets/background/EntranceDoorAnimationSheet.png").get_height()),
+            frames_count=9,delay=50)
 
-        # interact ranges
         self.interact_padding = 20
 
     def handle_event(self, event):
@@ -117,13 +112,10 @@ class Bank:
 
         if self.player.loan_active():
             sec_left = self.player.loan_time_left_ms() // 1000
-            screen.blit(
-                hud_font.render(f"Loan: ${self.player.loan_amount} - Time left: {sec_left}s", True, (120, 60, 0)),
-                (10, 30)
-            )
+            screen.blit(hud_font.render(f"Loan: ${self.player.loan_amount} - Time left: {sec_left}s", True, (120, 60, 0)), (10, 30))
 
         help_font = pygame.font.Font(None, 20)
         screen.blit(help_font.render("Press E to talk to the teller when near him.", True, (30, 30, 30)),
                     (10, self.height - 30))
-
+        
         self.dialogue.draw(screen)

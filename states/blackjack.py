@@ -5,6 +5,7 @@ from ui.dialogue_box import DialogueBox
 
 class Blackjack:
     def __init__(self, player: Player = None):
+        # initialiseren van variables
         self.player = player
         self.width = SCREEN_WIDTH
         self.height = SCREEN_HEIGHT
@@ -40,11 +41,6 @@ class Blackjack:
             elif event.key == pygame.K_i:
                 self.show_help()
 
-    def show_help(self):
-        lines = ["Help message..."]
-        choices = ["Close"]
-
-        self.dialogue.open(lines, choices)
     def show_help(self):
         lines = [
             "Goal: Get as close to 21 as possible without going over.",
@@ -108,10 +104,9 @@ class Blackjack:
 
     def hand_value(self, hand):
         value = sum(hand)
-
         # adjust for Aces
         aces = hand.count(11)
-        while value > 21 and aces == True:
+        while value > 21 and aces > 0:
             value -= 10
             aces -= 1
         return value

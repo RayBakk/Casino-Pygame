@@ -4,10 +4,9 @@ from states.animated_door import AnimatedDoor
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 
-# ==================== Player ========================
-
 class Player:
     def __init__(self, x=400, y=300):
+        # initialiseren van variables
         self.x = x
         self.y = y
 
@@ -31,7 +30,7 @@ class Player:
 
         self.frame = 0
         self.frame_timer = 0
-        self.frame_delay = 120  # ms
+        self.frame_delay = 120 
 
         self.money = 1000
         self.loan_amount = 0
@@ -112,7 +111,7 @@ class Player:
     def rect(self):
         return pygame.Rect(int(self.x), int(self.y), self.size, self.size)
 
-    # LOANS
+    # loan
     def start_loan(self, amount: int, duration_seconds: int):
         if self.loan_active():
             return
@@ -141,18 +140,9 @@ class Player:
         self.frame_w = self.sheet.get_width() // 4
         self.frame_h = self.sheet.get_height() // 4
 
-    def set_skin(self, path: str):
-        self.sheet = pygame.image.load(path).convert_alpha()
-        self.frame_w = self.sheet.get_width() // 4
-        self.frame_h = self.sheet.get_height() // 4
-
-
-
-# ==================== CASINO FLOOR ========================
-
 class CasinoFloor:
     def __init__(self, player: Player = None):
-        self.player = player if player else Player()
+        self.player = player
         self.width = SCREEN_WIDTH
         self.height = SCREEN_HEIGHT
         self.next_state = None
@@ -165,19 +155,13 @@ class CasinoFloor:
         self.slot_img = pygame.image.load("assets/background/slots_casino_floor.png").convert_alpha()
         self.wardrobe_img = pygame.image.load("assets/background/wardrobe.png").convert_alpha()
 
-
-        wardrobe_h =48
-        self.wardrobe_rect = pygame.Rect(100, wardrobe_h, 48 , 48)
+        self.wardrobe_rect = pygame.Rect(100, 48, 48 , 48)
 
         self.blackjack_rect = pygame.Rect(90, 120, 140, 90)
-        self.roulette_rect = pygame.Rect(270, 100, 170, 120)
-        self.slot_rect = pygame.Rect(520, 120, 70, 120)
+        self.roulette_rect = pygame.Rect(290, 100, 170, 120)
+        self.slot_rect = pygame.Rect(520, 90, 70, 120)
 
-        self.door = AnimatedDoor(
-            sheet_path="assets/background/EntranceDoorAnimationSheet.png",
-            pos=((SCREEN_WIDTH - (pygame.image.load("assets/background/EntranceDoorAnimationSheet.png").get_width() // 9)) // 2,0 ),            frames_count=9,
-            delay=50
-        )
+        self.door = AnimatedDoor("assets/background/EntranceDoorAnimationSheet.png", ((SCREEN_WIDTH - (pygame.image.load("assets/background/EntranceDoorAnimationSheet.png").get_width() // 9)) // 2,0 ), 9, 50)
 
         self.interact_padding = 20
 
@@ -194,7 +178,6 @@ class CasinoFloor:
                 self.next_state = "bank"
             elif p.colliderect(self.wardrobe_rect.inflate(self.interact_padding, self.interact_padding)):
                 self.next_state = "wardrobe"
-
 
     def update(self):
         self.player.update(self.width, self.height)
@@ -234,11 +217,7 @@ class CasinoFloor:
 
         if self.player.loan_active():
             sec_left = self.player.loan_time_left_ms() // 1000
-            screen.blit(
-                hud_font.render(f"Loan: ${self.player.loan_amount} - Time left: {sec_left}s", True, (255, 200, 50)),
-                (10, 30)
-            )
+            screen.blit(hud_font.render(f"Loan: ${self.player.loan_amount} - Time left: {sec_left}s", True, (255, 200, 50)), (10, 30))
 
         help_font = pygame.font.Font(None, 20)
-        screen.blit(help_font.render("Press E when near a table/machine/door.", True, (220, 220, 220)),
-                    (10, self.height - 30))
+        screen.blit(help_font.render("Press E when near a table/machine/door.", True, (220, 220, 220)), (10, self.height - 30))

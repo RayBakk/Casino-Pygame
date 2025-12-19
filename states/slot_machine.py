@@ -5,6 +5,7 @@ from ui.dialogue_box import DialogueBox
 
 class SlotMachine:
     def __init__(self, player: Player = None):
+        # initialiseren van variables
         self.player = player
         self.next_state = None
         self.dialogue = DialogueBox()
